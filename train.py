@@ -16,7 +16,6 @@ from tqdm import tqdm
 import argparse
 import shutil
 import glob
-import operator
 import backbone as b
 from config import *
 from datetime import datetime
@@ -112,6 +111,10 @@ def main(model, log_file):
         mask_validation_patches = torch.cat(mask_validation_patches, dim=0).reshape(-1, channels, PATCH_SIZE, PATCH_SIZE)
         b.countAnomalies(validation_patches, mask_validation_patches, log_dir, save=False)
 
+    b.myPrint('Dataset: ' + str(args.dataset_type) + '\nBatch size: ' + str(args.batch_size) + "\nEpochs: " + str(args.epochs), log_file)
+    b.myPrint('Number of memory: ' + str(args.msize), log_file)
+    b.myPrint('Patches size: ' + str(args.h) + "x" + str(args.w) + "x" + str(args.c), log_file)
+
     # Loading dataset
     train_dataset = DataLoader(train_folder, transforms.Compose([
                 transforms.ToTensor(),
@@ -122,8 +125,8 @@ def main(model, log_file):
                 ]), resize_height=args.h, resize_width=args.w, time_step=args.t_length-1)
     train_size = len(train_dataset)
     validation_size = len(validation_dataset)
-    b.myPrint("args.t_length-1: {}, train_size: {}".format(args.t_length-1, train_size), log_file)
-    b.myPrint("validation_size: {}".format(validation_size), log_file)
+    b.myPrint("Length (-1) of the frame sequences: {}, \nTrain images: {}".format(args.t_length-1, train_size), log_file)
+    b.myPrint("Validation images: {}".format(validation_size), log_file)
     train_batch = data.DataLoader(train_dataset, batch_size = args.batch_size,
                                 shuffle=True, num_workers=args.num_workers, drop_last=True)
     validation_batch = data.DataLoader(validation_dataset, batch_size = args.validation_batch_size,
@@ -301,14 +304,13 @@ def main(model, log_file):
         accuracy = AUC(score_with_th, np.expand_dims(1 - labels_list, 0))
         b.myPrint("With th: {} --------> AUC: {}".format(t1, accuracy), log_file)
         acc[i] = accuracy
-    print(acc)
 
     index = np.argmax(acc)
     b.myPrint("Best threshold for anomaly score detection: {}".format(th_anomaly_score_array[index]), log_file)
     torch.save(th_anomaly_score_array[index], os.path.join(log_dir, 'best_th_anomaly.pth'))
 
-    shutil.rmtree(train_folder, ignore_errors=True)
-    shutil.rmtree(validation_folder, ignore_errors=True)
+    shutil.rmtree(args.dataset_path+"/"+args.dataset_type+"/training", ignore_errors=True)
+    shutil.rmtree(args.dataset_path+"/"+args.dataset_type+"/validating/", ignore_errors=True)
 
 
 if __name__ == '__main__':

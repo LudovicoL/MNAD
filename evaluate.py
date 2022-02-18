@@ -18,6 +18,7 @@ from utils import *
 import random
 import glob
 import argparse
+import shutil
 
 import backbone as b
 from config import *
@@ -231,32 +232,6 @@ def main(log_file):
         # Point out the anomalies patches
         j = 0
         for i in range(number_of_images):
-            # img = all_recon_output[j:j+test_number_of_patches_for_image[i]]
-            # img = torch.stack(img)
-            # img = img.unsqueeze(1)
-            # print(img.shape)
-            # anomaly_score = anomaly_score_total_list[j:j+test_number_of_patches_for_image[i]]
-            # threshold = anomaly_score > args.th
-            # idx = []
-            # for n, e in enumerate(threshold):
-            #     if e == False:
-            #         idx.append(n)
-            # b_mask = torch.zeros(test_number_of_patches_for_image[i], 1, PATCH_SIZE, PATCH_SIZE)
-            # p1 = torch.ones(1, PATCH_SIZE, PATCH_SIZE)
-            # for id in idx:
-            #     b_mask[id] = p1
-            # out = b.AssemblePatches(b_mask, 1, 1, test_heights[i], test_widths[i], PATCH_SIZE, STRIDE).__getitem__(0)
-            # recon_image = b.AssemblePatches(img, 1, 1, test_heights[i], test_widths[i], PATCH_SIZE, STRIDE).__getitem__(0)
-            # out = out.numpy()
-            # recon_image = recon_image.numpy()
-            # norm_mask = normalize(out)
-            # norm_image = normalize(recon_image)
-            # contours, _ = find_contours(norm_mask)
-            # norm_image = cv2.cvtColor(norm_image, cv2.COLOR_GRAY2RGB)
-            # for c in contours:
-            #     cv2.drawContours(norm_image, [c], 0, (255, 0, 0), 5)
-            # cv2.imwrite(b.assemble_pathname("IMG_Test" + str(i) + ".png", log_dir), norm_image)
-
             test_patches_with_colors = []
             for k in range(test_number_of_patches_for_image[i]):
                 test_patches_with_colors.append(test_patches[j+k].repeat(3, 1, 1))
@@ -287,9 +262,6 @@ def main(log_file):
         FP = []
         FN = []
 
-        print(labels)
-        print(classification)
-
         for i in range(test_size):
             if labels[0][i] == True and classification[i] == True:
                     TP.append(i)
@@ -300,7 +272,6 @@ def main(log_file):
             elif labels[0][i] == True and classification[i] == False:
                 FN.append(i)
 
-        print(len(TP), len(FP), len(TN), len(FN))
         precision = b.precision(len(TP), len(FP))
         sensitivity = b.sensitivity(len(TP), len(FN))
         fpr = b.FPR(len(FP), len(TN))
@@ -311,7 +282,7 @@ def main(log_file):
         b.myPrint("False Positive Rate : " + str(fpr), log_file)
         b.myPrint("F1-Score : " + str(f1_score), log_file)
 
-    
+    shutil.rmtree(test_folder = args.dataset_path+"/"+args.dataset_type+"/testing", ignore_errors=True)
 
 
 

@@ -1,5 +1,6 @@
 import torch
 import numpy as np
+import os
     
 ########################################################
 # Control variables
@@ -8,9 +9,9 @@ import numpy as np
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 outputs_dir = './outputs/'
 plot_extension = '.png'
-Telegram_messages = False
+Telegram_messages = True
 seed = 0
-
+os.makedirs(outputs_dir, exist_ok=True)
 ########################################################
 # Datasets
 # AITEX
@@ -19,7 +20,7 @@ aitex_train_dir = aitex_folder + '/trainset/'
 aitex_validation_dir = aitex_folder + '/validationset/'
 aitex_test_dir = aitex_folder + '/testset/'
 aitex_mask_dir = aitex_folder + '/Mask_images/'
-CUT_PATCHES = 3
+CUT_PATCHES = 1
 
 ########################################################
 # Network parameters

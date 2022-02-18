@@ -159,3 +159,9 @@ class convAE(torch.nn.Module):
             
             return output, fea, updated_fea, keys, softmax_score_query, softmax_score_memory, query, top1_keys, keys_ind, compactness_loss
         
+                                          
+
+
+
+    
+    

@@ -39,7 +39,7 @@ TEST_WORKERS = 1            # number of workers for the test loader
 PATCH_SIZE = 64             # patch size
 STRIDE = PATCH_SIZE         # stride of patch
 
-BATCH_SIZE = 128            # batch size
+BATCH_SIZE = 64             # batch size
 VAL_BATCH_SIZE = 1          # batch size for validation
 TEST_BATCH_SIZE = 1         # batch size for testing
 

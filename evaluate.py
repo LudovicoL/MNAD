@@ -19,12 +19,13 @@ import random
 import glob
 import argparse
 import shutil
+import time
 
 import backbone as b
 from config import *
 
 
-parser = argparse.ArgumentParser(description="MNAD2")
+parser = argparse.ArgumentParser(description="MNAD")
 parser.add_argument('--gpus', nargs='+', type=str, help='gpus')
 parser.add_argument('--batch_size', type=int, default=TEST_BATCH_SIZE, help='batch size for testing')
 parser.add_argument('--h', type=int, default=PATCH_SIZE, help='height of input images')
@@ -282,13 +283,15 @@ def main(log_file):
         b.myPrint("False Positive Rate : " + str(fpr), log_file)
         b.myPrint("F1-Score : " + str(f1_score), log_file)
 
-    shutil.rmtree(test_folder = args.dataset_path+"/"+args.dataset_type+"/testing", ignore_errors=True)
+    shutil.rmtree(args.dataset_path+"/"+args.dataset_type+"/testing", ignore_errors=True)
 
 
 
 
 if __name__ == '__main__':
     log_file = open(log_dir + "log.txt", "a")
+    start_time = time.time()
     main(log_file)
-    if Telegram_messages: b.telegram_bot_sendtext("MNAD2: Testing finished.")
+    b.myPrint("---Execution time: %s seconds ---\n" % (time.time() - start_time), log_file)
+    if Telegram_messages: b.telegram_bot_sendtext("*MNAD*: Testing finished.")
     log_file.close()
